@@ -6,9 +6,8 @@ goals
 **/node_modules
 **/.DS_Store
 /.github
-/index.html
+/example
 /server.py
-/wasmLoader.js
 /rust-toolchain
 /test
 /.cargo/config

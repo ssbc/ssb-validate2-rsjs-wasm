@@ -1,11 +1,4 @@
-import {
-  ready,
-  verifySignatures,
-  validateSingle,
-  validateBatch,
-  validateOOOBatch,
-  validateMultiAuthorBatch,
-} from "./index.js";
+import * as Comlink from "../comlink.mjs";
 
 const msg1 = {
   key: "%/v5mCnV/kmnVtnF3zXtD4tbzoEQo4kRq/0d/bgxP1WI=.sha256",
@@ -52,41 +45,32 @@ const msg2 = {
 };
 
 async function run() {
-  await ready();
+  // import the Validator worker class
+  const Validator = Comlink.wrap(new Worker("../worker.js", { type: "module" }));
+  // instantiate the Validator
+  const validate = await new Validator();
+  // load the wasm module and initialise the worker threadpool
+  await validate.ready();
 
-  let err = validateSingle(msg1);
+  // call the methods from the Validator class
+  // these act like RPC calls since we are using Comlink for the WebWorkers
+  let err = await validate.verifySignatures([msg1, msg2]);
   if (err) {
     console.log(err);
   } else {
-    console.log("validateSingle works :)");
+    console.log("verifySignatures works :)");
   }
-
-  let err2 = validateBatch([msg1, msg2]);
+  let err2 = await validate.validateSingle(msg1);
   if (err2) {
     console.log(err2);
   } else {
-    console.log("validateBatch works :)");
+    console.log("validateSingle works :)");
   }
-
-  let err3 = validateOOOBatch([msg2, msg1]);
+  let err3 = await validate.validateBatch([msg1, msg2]);
   if (err3) {
     console.log(err3);
   } else {
-    console.log("validateOOOBatch works :)");
-  }
-
-  let err4 = validateMultiAuthorBatch([msg2, msg1]);
-  if (err4) {
-    console.log(err4);
-  } else {
-    console.log("validateMultiAuthorBatch works :)");
-  }
-
-  let err5 = verifySignatures([msg1, msg2]);
-  if (err5) {
-    console.log(err5);
-  } else {
-    console.log("verifySignatures works :)");
+    console.log("validateBatch works :)");
   }
 }
 
