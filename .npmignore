@@ -1,0 +1,15 @@
+test_results
+notes
+goals
+/target
+**/*~
+**/node_modules
+**/.DS_Store
+/.github
+/index.html
+/server.py
+/wasmLoader.js
+/rust-toolchain
+/test
+/.cargo/config
+karma.conf.js

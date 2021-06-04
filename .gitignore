@@ -1,0 +1,8 @@
+test_results
+notes
+goals
+/target
+/pkg
+**/*~
+**/node_modules
+**/.DS_Store
