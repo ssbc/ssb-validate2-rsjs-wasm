@@ -1,6 +1,7 @@
 test_results
 notes
 goals
+/dist
 /target
 /pkg
 **/*~

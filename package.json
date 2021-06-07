@@ -1,6 +1,6 @@
 {
   "name": "ssb-validate2-rsjs-wasm",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Cryptographic validation of Scuttlebutt messages",
   "main": "index.js",
   "repository": {
@@ -17,10 +17,12 @@
     "karma-chrome-launcher": "^3.1.0",
     "karma-firefox-launcher": "^2.1.0",
     "karma-jasmine": "^4.0.1",
-    "prettier": "^2.3.0"
+    "prettier": "^2.3.0",
+    "webpack": "^5.38.1",
+    "webpack-cli": "^4.7.0"
   },
   "scripts": {
-    "build": "rm -rf pkg && wasm-pack build --target web",
+    "build": "rm -rf pkg && rm -rf dist && wasm-pack build --target web && webpack build",
     "test": "karma start karma.conf.js",
     "format-code": "prettier --write *.js test/*.js"
   }

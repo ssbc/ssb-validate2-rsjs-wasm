@@ -46,7 +46,7 @@ const msg2 = {
 
 async function run() {
   // import the Validator worker class
-  const Validator = Comlink.wrap(new Worker("../worker.js", { type: "module" }));
+  const Validator = Comlink.wrap(new Worker("../dist/main.js"));
   // instantiate the Validator
   const validate = await new Validator();
   // load the wasm module and initialise the worker threadpool

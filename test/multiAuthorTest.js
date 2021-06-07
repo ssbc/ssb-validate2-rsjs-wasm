@@ -11,7 +11,7 @@ describe("test: ", function () {
 
   beforeAll(async function () {
     // load webworker module
-    const worker = new Worker(new URL("../worker.js", import.meta.url), {
+    const worker = new Worker(new URL("../dist/main.js", import.meta.url), {
       type: "module",
     });
     // load Validator class from worker module
