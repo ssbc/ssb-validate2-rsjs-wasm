@@ -31,6 +31,8 @@ If you wish to rebuild the WASM module after making changes to the code, use the
 
 The tool can also compile for alternative target environments. See the [deployment guide](https://rustwasm.github.io/docs/wasm-bindgen/reference/deployment.html) for more information.
 
+The build process also includes bundling with [webpack](https://webpack.js.org). Webpack outputs the bundled assets to `./dist/`. One advantage of the bundled approach is that the resulting code runs in Firefox without the need to include a Module Workers polyfill.
+
 ## Tests
 
 Tests for single-author and multi-author messages are included. These tests are defined using [jasmine](https://jasmine.github.io/index.html) and are executed with [karma](http://karma-runner.github.io/6.3/index.html). The tests and related artifacts, such as JSON messages, can be found in the `test` directory. Test configuration for `karma` can be found in `karma.conf.js` in the root of this repo.
