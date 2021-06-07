@@ -11,9 +11,8 @@ module.exports = function (config) {
 
     // list of files / patterns to load in the browser
     files: [
-      { pattern: "worker.js", type: "module" },
+      { pattern: "dist/main.js", type: "module" },
       { pattern: "comlink.mjs", type: "module" },
-      { pattern: "index.js", type: "module" },
       { pattern: "test/*.js", type: "module" },
     ],
 

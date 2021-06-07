@@ -30,9 +30,7 @@ describe("test: ", function () {
 
   beforeAll(async function () {
     // load webworker module
-    const worker = new Worker(new URL("../worker.js", import.meta.url), {
-      type: "module",
-    });
+    const worker = new Worker(new URL("../dist/main.js", import.meta.url));
     // load Validator class from worker module
     const Validator = Comlink.wrap(worker);
     // instantiate Validator
