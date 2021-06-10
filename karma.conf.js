@@ -37,7 +37,7 @@ module.exports = function (config) {
     },
 
     proxies: {
-      '/dist': './dist',
+      '/test-dist': './test-dist',
     },
 
     // test results reporter to use
