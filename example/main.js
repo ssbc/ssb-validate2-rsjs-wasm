@@ -1,4 +1,4 @@
-import * as Comlink from "../comlink.mjs";
+const validate = require("../index");
 
 const msg1 = {
   key: "%/v5mCnV/kmnVtnF3zXtD4tbzoEQo4kRq/0d/bgxP1WI=.sha256",
@@ -45,15 +45,10 @@ const msg2 = {
 };
 
 async function run() {
-  // import the Validator worker class
-  const Validator = Comlink.wrap(new Worker("../dist/main.js"));
-  // instantiate the Validator
-  const validate = await new Validator();
   // load the wasm module and initialise the worker threadpool
   await validate.ready();
 
-  // call the methods from the Validator class
-  // these act like RPC calls since we are using Comlink for the WebWorkers
+  // these methods act like RPC calls, we are using Comlink with WebWorkers
   let err = await validate.verifySignatures([msg1, msg2]);
   if (err) {
     console.log(err);

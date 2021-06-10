@@ -7,3 +7,5 @@ goals
 **/*~
 **/node_modules
 **/.DS_Store
+/example/bundle
+/.parcel-cache

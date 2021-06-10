@@ -1,5 +1,8 @@
-import * as Comlink from "../comlink.mjs";
-import jsonMsgs from "./singleAuthorMsgs.js";
+const Comlink = require("comlink");
+const jsonMsgs = require("./data/singleAuthorMsgs.js");
+
+// We can't just require ../index because Karma doesn't bundle `new Worker`
+const validate = Comlink.wrap(new Worker("../dist/main.js"));
 
 // map the msg value for each msg in the json array
 let msgs = jsonMsgs.map((m) => m.value);
@@ -25,16 +28,7 @@ const validMsg = {
 };
 
 describe("test: ", function () {
-  // define validate here so we can access it in all `it` functions
-  var validate;
-
   beforeAll(async function () {
-    // load webworker module
-    const worker = new Worker(new URL("../dist/main.js", import.meta.url));
-    // load Validator class from worker module
-    const Validator = Comlink.wrap(worker);
-    // instantiate Validator
-    validate = await new Validator();
     // load wasm module and initialize webworkers
     await validate.ready();
   });

@@ -14,9 +14,11 @@
     "comlink": "^4.3.1",
     "jasmine-core": "^3.7.1",
     "karma": "^6.3.2",
+    "karma-browserify": "^8.0.0",
     "karma-chrome-launcher": "^3.1.0",
     "karma-firefox-launcher": "^2.1.0",
     "karma-jasmine": "^4.0.1",
+    "parcel": "^2.0.0-beta.2",
     "prettier": "^2.3.0",
     "webpack": "^5.38.1",
     "webpack-cli": "^4.7.0"
@@ -24,6 +26,7 @@
   "scripts": {
     "build": "rm -rf pkg && rm -rf dist && wasm-pack build --target web && webpack build",
     "test": "karma start karma.conf.js",
-    "format-code": "prettier --write *.js test/*.js"
+    "format-code": "prettier --write *.js test/*.js",
+    "bundle-example": "parcel ./example/main.js --dist-dir ./example/bundle & sleep 4; kill \"$!\""
   }
 }

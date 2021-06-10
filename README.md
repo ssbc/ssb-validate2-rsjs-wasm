@@ -6,6 +6,27 @@ Perform batch verification and validation of SSB messages using [ssb-verify-sign
 
 The [wasm-bindgen](https://crates.io/crates/wasm-bindgen) and [wasm-bindgen-rayon](https://crates.io/crates/wasm-bindgen-rayon) crates are currently used to generate WASM from Rust code.
 
+## Usage
+
+```
+npm install ssb-validate2-rsjs-wasm
+```
+
+Assuming you are using a bundler that supports understanding `new Worker()` such as [Parcel](https://github.com/parcel-bundler/parcel), you import this library like this:
+
+```js
+const validate = require('ssb-validate2-rsjs-wasm')
+```
+
+And then all its APIs are Promise-based:
+
+```js
+await validate.ready();
+
+let err = await validate.verifySignatures([msg1, msg2]);
+if (err) console.log(err);
+```
+
 ## Build
 
 Rust first needs to be installed in order to compile to WASM ([installation instructions](https://rustup.rs/)). Also ensure that `clang` version 10 or higher is installed (system dependency).
