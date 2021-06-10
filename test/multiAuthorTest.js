@@ -2,7 +2,7 @@ const Comlink = require("comlink");
 const jsonMsgs = require("./data/multiAuthorMsgs.js");
 
 // We can't just require ../index because Karma doesn't bundle `new Worker`
-const validate = Comlink.wrap(new Worker("../dist/main.js"));
+const validate = Comlink.wrap(new Worker("../test-dist/main.js"));
 
 // map the msg value for each msg in the json array
 let msgs = jsonMsgs.map((m) => m.value);
