@@ -6,9 +6,12 @@ goals
 **/node_modules
 **/.DS_Store
 /.github
+/.parcel-cache
 /example
-/server.py
 /rust-toolchain
+/server.py
 /test
+/webpack.config.js
+/worker.js
 /.cargo/config
 karma.conf.js
