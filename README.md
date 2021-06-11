@@ -18,13 +18,14 @@ Assuming you are using a bundler that supports understanding `new Worker()` such
 const validate = require('ssb-validate2-rsjs-wasm')
 ```
 
-And then all its APIs are Promise-based:
+And then all its APIs are callback-based, but you *must* call `ready()` first, just once:
 
 ```js
-await validate.ready();
-
-let err = await validate.verifySignatures([msg1, msg2]);
-if (err) console.log(err);
+validate.ready(() => {
+  validate.verifySignatures([msg1, msg2], (err) => {
+    if (err) console.log(err);
+  });
+});
 ```
 
 ## Build
