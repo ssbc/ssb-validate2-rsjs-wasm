@@ -2,7 +2,7 @@
   "name": "ssb-validate2-rsjs-wasm",
   "version": "0.4.0",
   "description": "Cryptographic validation of Scuttlebutt messages",
-  "main": "index.js",
+  "module": "index.mjs",
   "repository": {
     "type": "git",
     "url": "https://github.com/ssb-ngi-pointer/ssb-validate2-rsjs-wasm"
@@ -11,13 +11,14 @@
   "license": "AGPL-3.0",
   "devDependencies": {
     "@open-wc/karma-esm": "^4.0.0",
+    "assert": "^2.0.0",
+    "chai": "^4.3.4",
     "comlink": "^4.3.1",
-    "jasmine-core": "^3.7.1",
     "karma": "^6.3.2",
-    "karma-browserify": "^8.0.0",
     "karma-chrome-launcher": "^3.1.0",
     "karma-firefox-launcher": "^2.1.0",
-    "karma-jasmine": "^4.0.1",
+    "karma-mocha": "^2.0.1",
+    "mocha": "^3.0.0",
     "parcel": "^2.0.0-beta.2",
     "prettier": "^2.3.0",
     "webpack": "^5.38.1",
