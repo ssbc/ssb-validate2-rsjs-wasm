@@ -1,4 +1,4 @@
-const validate = require("../index");
+import * as validate from "../index.mjs";
 
 const msg1 = {
   key: "%/v5mCnV/kmnVtnF3zXtD4tbzoEQo4kRq/0d/bgxP1WI=.sha256",
