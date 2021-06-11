@@ -59,11 +59,9 @@ const validateMultiAuthorBatch = (msgs) => {
  * The WebWorkers are used as threads for parallel validation.
  * One thread is created for each processor core.
  */
-const ready = async (cb) => {
+const ready = async () => {
   await init();
   await initThreadPool(navigator.hardwareConcurrency);
-
-  if (cb) cb();
 };
 
 export {
