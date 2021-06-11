@@ -1,8 +1,10 @@
 const Comlink = require("comlink");
+const promisesToCallbacks = require("../promise-to-cb");
 const jsonMsgs = require("./data/singleAuthorMsgs.js");
 
 // We can't just require ../index because Karma doesn't bundle `new Worker`
-const validate = Comlink.wrap(new Worker("../test-dist/main.js"));
+const wrapped = Comlink.wrap(new Worker("../test-dist/main.js"));
+const validate = promisesToCallbacks(wrapped);
 
 // map the msg value for each msg in the json array
 let msgs = jsonMsgs.map((m) => m.value);
@@ -28,92 +30,113 @@ const validMsg = {
 };
 
 describe("test: ", function () {
-  beforeAll(async function () {
+  beforeAll(function (done) {
     // load wasm module and initialize webworkers
-    await validate.ready();
+    validate.ready(done);
   });
 
   // `toBeFalsy()` checks for a successful result
   // `toContain(error msg)` checks for an error
 
-  it("batch verification of message signatures", async function () {
-    // note the `await` before validate (method returns a promise)
-    expect(await validate.verifySignatures(msgs)).toEqual();
+  it("batch verification of message signatures", function () {
+    validate.verifySignatures(msgs, (err) => {
+      expect(err).toBeFalsy();
+    })
   });
 
-  it("batch verification of out-of-order message signatures", async function () {
+  it("batch verification of out-of-order message signatures", function () {
     const oooMsgs = [...msgs];
     // shuffle the messages (generate out-of-order state)
     oooMsgs.sort(() => Math.random() - 0.5);
     // attempt verification of all messages
-    expect(await validate.verifySignatures(oooMsgs)).toBeFalsy();
+    validate.verifySignatures(oooMsgs, (err) => {
+      expect(err).toBeFalsy();
+    })
   });
 
-  it("verification of single message signature (valid)", async function () {
+  it("verification of single message signature (valid)", function () {
     //let msg = [validMsg];
     let validMsgClone = JSON.parse(JSON.stringify(validMsg));
-    let msg = [validMsgClone];
-    expect(await validate.verifySignatures(msg)).toBeFalsy();
+    let msgs = [validMsgClone];
+    validate.verifySignatures(msgs, (err) => {
+      expect(err).toBeFalsy();
+    })
   });
 
-  it("verification of single message signature (invalid)", async function () {
+  it("verification of single message signature (invalid)", function () {
     let invalidMsg = JSON.parse(JSON.stringify(validMsg));
     // change one of the msg fields to invalidate the signature
     invalidMsg.value.content.following = false;
-    let msg = [invalidMsg];
-    expect(await validate.verifySignatures(msg)).toContain(
-      "Signature was invalid"
-    );
+    let msgs = [invalidMsg];
+    validate.verifySignatures(msgs, (err) => {
+      expect(err).toContain("Signature was invalid");
+    })
   });
 
-  it("validation of first message (`seq` == 1) without `previous`", async function () {
-    expect(await validate.validateSingle(msgs[0])).toBeFalsy();
+  it("validation of first message (`seq` == 1) without `previous`", function () {
+    validate.validateSingle(msgs[0], null, (err) => {
+      expect(err).toBeFalsy();
+    })
   });
 
-  it("validation of a single with `previous`", async function () {
-    expect(await validate.validateSingle(msgs[1], msgs[0])).toBeFalsy();
+  it("validation of a single with `previous`", function () {
+    validate.validateSingle(msgs[1], msgs[0], (err) => {
+      expect(err).toBeFalsy();
+    })
   });
 
-  it("validation of a single message (`seq` > 1) without `previous`", async function () {
-    expect(await validate.validateSingle(msgs[3])).toContain(
-      "The first message of a feed must have seq of 1"
-    );
+  it("validation of a single message (`seq` > 1) without `previous`", function () {
+    validate.validateSingle(msgs[3], null, (err) => {
+      expect(err).toContain(
+        "The first message of a feed must have seq of 1"
+      );
+    })
   });
 
-  it("batch validation of full feed", async function () {
-    expect(await validate.validateBatch(msgs)).toBeFalsy();
+  it("batch validation of full feed", function () {
+    validate.validateBatch(msgs, null, (err) => {
+      expect(err).toBeFalsy();
+    })
   });
 
-  it("batch validation of partial feed (previous seq == 1)", async function () {
+  it("batch validation of partial feed (previous seq == 1)", function () {
     const mutMsgs = [...msgs];
     // shift first msg into `previous`
     let previous = mutMsgs.shift();
-    expect(await validate.validateBatch(mutMsgs, previous)).toBeFalsy();
+    validate.validateBatch(mutMsgs, previous, (err) => {
+      expect(err).toBeFalsy();
+    })
   });
 
-  it("batch validation of partial feed (previous seq > 1)", async function () {
+  it("batch validation of partial feed (previous seq > 1)", function () {
     const mutMsgs = [...msgs];
     // skip first msg in the array
     let first = mutMsgs.shift();
     // shift first msg into `previous`
     let previous = mutMsgs.shift();
-    expect(await validate.validateBatch(mutMsgs, previous)).toBeFalsy();
+    validate.validateBatch(mutMsgs, previous, (err) => {
+      expect(err).toBeFalsy();
+    })
   });
 
-  it("batch validation of partial feed without `previous`", async function () {
+  it("batch validation of partial feed without `previous`", function () {
     const mutMsgs = [...msgs];
     // shift first msg into `previous`
     let previous = mutMsgs.shift();
     // attempt validation of all messages without `previous`
-    expect(await validate.validateBatch(mutMsgs)).toContain(
-      "The first message of a feed must have seq of 1"
-    );
+    validate.validateBatch(mutMsgs, null, (err) => {
+      expect(err).toContain(
+        "The first message of a feed must have seq of 1"
+      );
+    })
   });
 
-  it("batch validation of out-of-order messages", async function () {
+  it("batch validation of out-of-order messages", function () {
     const oooMsgs = [...msgs];
     // shuffle the messages (generate out-of-order state)
     oooMsgs.sort(() => Math.random() - 0.5);
-    expect(await validate.validateOOOBatch(oooMsgs)).toBeFalsy();
+    validate.validateOOOBatch(oooMsgs, (err) => {
+      expect(err).toBeFalsy();
+    })
   });
 });

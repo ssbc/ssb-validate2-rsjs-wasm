@@ -44,29 +44,31 @@ const msg2 = {
   timestamp: 1571140551485,
 };
 
-async function run() {
-  // load the wasm module and initialise the worker threadpool
-  await validate.ready();
-
+// load the wasm module and initialise the worker threadpool
+validate.ready(() => {
   // these methods act like RPC calls, we are using Comlink with WebWorkers
-  let err = await validate.verifySignatures([msg1, msg2]);
-  if (err) {
-    console.log(err);
-  } else {
-    console.log("verifySignatures works :)");
-  }
-  let err2 = await validate.validateSingle(msg1);
-  if (err2) {
-    console.log(err2);
-  } else {
-    console.log("validateSingle works :)");
-  }
-  let err3 = await validate.validateBatch([msg1, msg2]);
-  if (err3) {
-    console.log(err3);
-  } else {
-    console.log("validateBatch works :)");
-  }
-}
+  validate.verifySignatures([msg1, msg2], (err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log("verifySignatures works :)");
+    }
 
-run();
+    validate.validateSingle(msg1, null, (err) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log("validateSingle works :)");
+      }
+
+      validate.validateBatch([msg1, msg2], null, (err) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("validateBatch works :)");
+        }
+      });
+    });
+  });
+});
+
