@@ -12,10 +12,16 @@ The [wasm-bindgen](https://crates.io/crates/wasm-bindgen) and [wasm-bindgen-rayo
 npm install ssb-validate2-rsjs-wasm
 ```
 
-Assuming you are using a bundler that supports understanding `new Worker()` such as [Parcel](https://github.com/parcel-bundler/parcel), you import this library like this:
+Assuming you are using a bundler that supports understanding `new Worker()` such as [Parcel](https://github.com/parcel-bundler/parcel), you import this library like this (ES Modules):
 
 ```js
-const validate = require('ssb-validate2-rsjs-wasm')
+import * as validate from "ssb-validate2-rsjs-wasm";
+```
+
+Or like this (CommonJS):
+
+```js
+const validate = require('ssb-validate2-rsjs-wasm');
 ```
 
 And then all its APIs are callback-based, but you *must* call `ready()` first, just once:

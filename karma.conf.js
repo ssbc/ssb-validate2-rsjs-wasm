@@ -7,11 +7,11 @@ module.exports = function (config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ["jasmine", "browserify"],
+    frameworks: ["mocha", "esm"],
 
     // list of files / patterns to load in the browser
     files: [
-      { pattern: "test/*.js" },
+      { pattern: "test/test.mjs", type: "module" },
     ],
 
     // list of files / patterns to exclude
@@ -20,24 +20,21 @@ module.exports = function (config) {
     plugins: [
       // load plugin
       require.resolve("@open-wc/karma-esm"),
-
-      // fallback: resolve any karma- plugins
-      "karma-*",
+      "karma-mocha",
+      "karma-chrome-launcher",
+      "karma-firefox-launcher",
     ],
+
+    esm: {
+      nodeResolve: true,
+    },
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-    preprocessors: {
-      'test/**/*.js': ["browserify"]
-    },
+    preprocessors: { },
 
-    // karma-browserify options: https://www.npmjs.com/package/karma-browserify
-    browserify: {
-      debug: false,
-    },
-
-    proxies: {
-      '/test-dist': './test-dist',
+    client: {
+      clearContext: false,
     },
 
     // test results reporter to use
