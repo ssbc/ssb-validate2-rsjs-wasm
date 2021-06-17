@@ -19,7 +19,6 @@
     "karma-firefox-launcher": "^2.1.0",
     "karma-mocha": "^2.0.1",
     "mocha": "^3.0.0",
-    "parcel": "^2.0.0-beta.2",
     "prettier": "^2.3.0",
     "webpack": "^5.38.1",
     "webpack-cli": "^4.7.0"
@@ -27,7 +26,6 @@
   "scripts": {
     "build": "rm -rf pkg && rm -rf dist && wasm-pack build --target web && webpack build",
     "test": "karma start karma.conf.js",
-    "format-code": "prettier --write *.js test/*.js",
-    "bundle-example": "parcel ./example/main.js --dist-dir ./example/bundle & sleep 4; kill \"$!\""
+    "format-code": "prettier --write *.js test/*.js"
   }
 }
