@@ -2,7 +2,7 @@
 
 Cryptographic validation of Scuttlebutt messages using WebAssembly.
 
-Perform batch verification and validation of SSB messages using [ssb-verify-signatures](https://crates.io/crates/ssb-verify-signatures) and [ssb-validate](https://github.com/mycognosist/ssb-validate) from the [Sunrise Choir](https://github.com/sunrise-choir) in the browser.
+Perform batch verification and validation of SSB message values using [ssb-verify-signatures](https://crates.io/crates/ssb-verify-signatures) and [ssb-validate](https://github.com/mycognosist/ssb-validate) from the [Sunrise Choir](https://github.com/sunrise-choir) in the browser.
 
 The [wasm-bindgen](https://crates.io/crates/wasm-bindgen) and [wasm-bindgen-rayon](https://crates.io/crates/wasm-bindgen-rayon) crates are currently used to generate WASM from Rust code.
 
@@ -24,12 +24,14 @@ Or like this (CommonJS):
 const validate = require('ssb-validate2-rsjs-wasm');
 ```
 
-And then all its APIs are callback-based, but you *must* call `ready()` first, just once:
+And then all its APIs are callback-based, but you *must* call `ready()` first, just once. Note that the messages are expected to be message `value` objects (*not* `KVT` objects). An array of keys is returned on success:
 
 ```js
 validate.ready(() => {
-  validate.verifySignatures([msg1, msg2], (err) => {
+  validate.verifySignatures([msg1, msg2], (err, res) => {
     if (err) console.log(err);
+    // print the keys array (includes keys for msg1 and msg2, in order)
+    else console.log(res);
   });
 });
 ```
