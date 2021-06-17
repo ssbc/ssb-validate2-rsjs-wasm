@@ -1,0 +1,13 @@
+{
+  "name": "ssb-validate2-rsjs-wasm-example",
+  "version": "0.0.0",
+  "description": "ssb-validate2-rsjs-wasm-example",
+  "scripts": {
+    "build": "webpack --config webpack.config.js"
+  },
+  "license": "AGPL-3.0",
+  "devDependencies": {
+    "webpack": "^5.38.1",
+    "webpack-cli": "^4.7.0"
+  }
+}
