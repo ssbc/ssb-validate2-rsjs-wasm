@@ -9,29 +9,29 @@ export function ready(cb) {
 }
 
 export function verifySignatures(msgs, cb) {
-  wrapped.verifySignatures(msgs).then(cb);
+  wrapped.verifySignatures(msgs).then(([err, res]) => cb(err, res));
 }
 
 export function validateSingle(msg, previous, cb) {
   if (previous) {
-    wrapped.validateSingle(msg, previous).then(cb);
+    wrapped.validateSingle(msg, previous).then(([err, res]) => cb(err, res));
   } else {
-    wrapped.validateSingle(msg).then(cb);
+    wrapped.validateSingle(msg).then(([err, res]) => cb(err, res));
   }
 }
 
 export function validateBatch(msgs, previous, cb) {
   if (previous) {
-    wrapped.validateBatch(msgs, previous).then(cb);
+    wrapped.validateBatch(msgs, previous).then(([err, res]) => cb(err, res));
   } else {
-    wrapped.validateBatch(msgs).then(cb);
+    wrapped.validateBatch(msgs).then(([err, res]) => cb(err, res));
   }
 }
 
 export function validateOOOBatch(msgs, cb) {
-  wrapped.validateOOOBatch(msgs).then(cb);
+  wrapped.validateOOOBatch(msgs).then(([err, res]) => cb(err, res));
 }
 
 export function validateMultiAuthorBatch(msgs, cb) {
-  wrapped.validateMultiAuthorBatch(msgs).then(cb);
+  wrapped.validateMultiAuthorBatch(msgs).then(([err, res]) => cb(err, res));
 }

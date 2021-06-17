@@ -47,28 +47,29 @@ const msg2 = {
 // load the wasm module and initialise the worker threadpool
 validate.ready(() => {
   // these methods act like RPC calls, we are using Comlink with WebWorkers
-  validate.verifySignatures([msg1, msg2], (err) => {
-    if (err) {
+  validate.verifySignatures([msg1.value, msg2.value], (err, res) => {
+    console.log('validate.verifySignatures([msg1.value, msg2.value], (err, res) => {');
+    console.log('err:');
+    console.log(err);
+    console.log('keys:');
+    console.log(res);
+    console.log('-------');
+
+    validate.validateSingle(msg1.value, null, (err, res) => {
+      console.log('validate.validateSingle(msg1.value, null, (err, res) => {');
+      console.log('err:');
       console.log(err);
-    } else {
-      console.log("verifySignatures works :)");
-    }
+      console.log('keys:');
+      console.log(res);
+      console.log('-------');
 
-    validate.validateSingle(msg1, null, (err) => {
-      if (err) {
+      validate.validateBatch([msg1.value, msg2.value], null, (err, res) => {
+        console.log('validate.validateBatch([msg1.value, msg2.value], null, (err, res) => {');
+        console.log('err:');
         console.log(err);
-      } else {
-        console.log("validateSingle works :)");
-      }
-
-      validate.validateBatch([msg1, msg2], null, (err) => {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log("validateBatch works :)");
-        }
+        console.log('keys:');
+        console.log(res);
       });
     });
   });
 });
-
