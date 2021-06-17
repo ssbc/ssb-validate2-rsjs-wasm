@@ -30,7 +30,6 @@ fn hash(msgs: Vec<Vec<u8>>) -> Vec<String> {
 /// verification and validation).
 #[wasm_bindgen(js_name = verifySignatures)]
 pub fn verify_messages(array: JsValue) -> JsValue {
-    // TODO: this unwrap makes me nervous...
     let elements: Vec<String> = array.into_serde().unwrap();
     let mut msgs = Vec::new();
     for msg in elements {
@@ -43,7 +42,7 @@ pub fn verify_messages(array: JsValue) -> JsValue {
         match verify_message_value(&msg_bytes) {
             Ok(_) => (),
             Err(e) => {
-                let invalid_msg_str = std::str::from_utf8(&msg_bytes).unwrap();
+                let invalid_msg_str = std::str::from_utf8(msg_bytes).unwrap();
                 let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
                 //return (Some(err_msg), None);
                 let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
@@ -124,7 +123,7 @@ pub fn verify_validate_messages(array: JsValue, previous: Option<String>) -> JsV
         match verify_message_value(&msg_bytes) {
             Ok(_) => (),
             Err(e) => {
-                let invalid_msg_str = std::str::from_utf8(&msg_bytes).unwrap();
+                let invalid_msg_str = std::str::from_utf8(msg_bytes).unwrap();
                 let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
                 let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
                 return JsValue::from_serde(&response).unwrap();
@@ -171,7 +170,7 @@ pub fn verify_validate_out_of_order_messages(array: JsValue) -> JsValue {
         match verify_message_value(&msg_bytes) {
             Ok(_) => (),
             Err(e) => {
-                let invalid_msg_str = std::str::from_utf8(&msg_bytes).unwrap();
+                let invalid_msg_str = std::str::from_utf8(msg_bytes).unwrap();
                 let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
                 let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
                 return JsValue::from_serde(&response).unwrap();
@@ -219,7 +218,7 @@ pub fn verify_validate_multi_author_messages(array: JsValue) -> JsValue {
         match verify_message_value(&msg_bytes) {
             Ok(_) => (),
             Err(e) => {
-                let invalid_msg_str = std::str::from_utf8(&msg_bytes).unwrap();
+                let invalid_msg_str = std::str::from_utf8(msg_bytes).unwrap();
                 let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
                 let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
                 return JsValue::from_serde(&response).unwrap();
