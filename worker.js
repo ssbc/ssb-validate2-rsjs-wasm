@@ -14,5 +14,5 @@ Comlink.expose({
   validateSingle,
   validateBatch,
   validateOOOBatch,
-  validateMultiAuthorBatch
+  validateMultiAuthorBatch,
 });
