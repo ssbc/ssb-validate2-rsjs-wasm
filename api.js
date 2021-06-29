@@ -8,50 +8,75 @@ import {
   validateMultiAuthorBatch as validateMultiAuthorBatchWasm,
 } from "./pkg/ssb_validate2_rsjs_wasm.js";
 
-const verifySignatures = (msgs) => {
-  if (!Array.isArray(msgs)) return "input must be an array of message objects";
-  const jsonMsgs = msgs.map((msg) => {
-    return JSON.stringify(msg, null, 2);
-  });
-  return verifySignaturesWasm(jsonMsgs);
-};
+// "The buffer module from node.js, for the browser"
+const Buffer = require("buffer/").Buffer;
 
-const validateSingle = (msg, previous) => {
-  const jsonMsg = JSON.stringify(msg, null, 2);
-  if (previous) {
-    const jsonPrevious = JSON.stringify(previous, null, 2);
-    return validateSingleWasm(jsonMsg, jsonPrevious);
+const stringify = (msg) => JSON.stringify(msg, null, 2);
+
+const toBuffer = (hmacKey) => {
+  let hmacVal;
+  let err;
+  if (!hmacKey) {
+    hmacVal = null;
+  } else {
+    hmacVal = Buffer.isBuffer(hmacKey)
+      ? hmacKey
+      : Buffer.from(hmacKey, "base64");
+    if (typeof hmacKey === "string") {
+      if (hmacVal.toString("base64") !== hmacKey)
+        err = "hmac key invalid: string must be base64 encoded";
+    }
   }
-  return validateSingleWasm(jsonMsg);
+  return [err, hmacVal];
 };
 
-const validateBatch = (msgs, previous) => {
+const verifySignatures = (hmacKey, msgs) => {
   if (!Array.isArray(msgs)) return "input must be an array of message objects";
-  const jsonMsgs = msgs.map((msg) => {
-    return JSON.stringify(msg, null, 2);
-  });
+  const jsonMsgs = msgs.map(stringify);
+  const [err, hmacVal] = toBuffer(hmacKey);
+  if (err) return [err];
+  return verifySignaturesWasm(hmacVal, jsonMsgs);
+};
+
+const validateSingle = (hmacKey, msg, previous) => {
+  const jsonMsg = stringify(msg);
+  const [err, hmacVal] = toBuffer(hmacKey);
+  if (err) return [err];
   if (previous) {
-    const jsonPrevious = JSON.stringify(previous, null, 2);
-    return validateBatchWasm(jsonMsgs, jsonPrevious);
+    const jsonPrevious = stringify(previous);
+    // `result` is a string of the hash (`key`) for the given `jsonMsg` value
+    return validateSingleWasm(hmacVal, jsonMsg, jsonPrevious);
   }
-  return validateBatchWasm(jsonMsgs);
+  return validateSingleWasm(hmacVal, jsonMsg);
 };
 
-const validateOOOBatch = (msgs) => {
+const validateBatch = (hmacKey, msgs, previous) => {
   if (!Array.isArray(msgs)) return "input must be an array of message objects";
-  const jsonMsgs = msgs.map((msg) => {
-    return JSON.stringify(msg, null, 2);
-  });
-  return validateOOOBatchWasm(jsonMsgs);
+  const jsonMsgs = msgs.map(stringify);
+  const [err, hmacVal] = toBuffer(hmacKey);
+  if (err) return [err];
+  if (previous) {
+    const jsonPrevious = stringify(previous);
+    // `result` is an array of strings (each string a `key`) for the given `jsonMsgs`
+    return validateBatchWasm(hmacVal, jsonMsgs, jsonPrevious);
+  }
+  return validateBatchWasm(hmacVal, jsonMsgs);
 };
 
-const validateMultiAuthorBatch = (msgs) => {
-  if (!Array.isArray(msgs))
-    throw new Error("input must be an array of message objects");
-  const jsonMsgs = msgs.map((msg) => {
-    return JSON.stringify(msg, null, 2);
-  });
-  return validateMultiAuthorBatchWasm(jsonMsgs);
+const validateOOOBatch = (hmacKey, msgs) => {
+  if (!Array.isArray(msgs)) return "input must be an array of message objects";
+  const jsonMsgs = msgs.map(stringify);
+  const [err, hmacVal] = toBuffer(hmacKey);
+  if (err) return [err];
+  return validateOOOBatchWasm(hmacVal, jsonMsgs);
+};
+
+const validateMultiAuthorBatch = (hmacKey, msgs) => {
+  if (!Array.isArray(msgs)) return "input must be an array of message objects";
+  const jsonMsgs = msgs.map(stringify);
+  const [err, hmacVal] = toBuffer(hmacKey);
+  if (err) return [err];
+  return validateMultiAuthorBatchWasm(hmacVal, jsonMsgs);
 };
 
 /*

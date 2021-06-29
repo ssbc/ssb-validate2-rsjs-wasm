@@ -1,4 +1,6 @@
 import * as validate from "../index.mjs";
+import validHmacMsg from "../test/data/validHmac.js";
+const hmacKey = null;
 
 const msg1 = {
   key: "%/v5mCnV/kmnVtnF3zXtD4tbzoEQo4kRq/0d/bgxP1WI=.sha256",
@@ -47,24 +49,24 @@ const msg2 = {
 // load the wasm module and initialise the worker threadpool
 validate.ready(() => {
   // these methods act like RPC calls, we are using Comlink with WebWorkers
-  validate.verifySignatures([msg1.value, msg2.value], (err, res) => {
-    console.log('validate.verifySignatures([msg1.value, msg2.value], (err, res) => {');
+  validate.verifySignatures(hmacKey, [msg1.value, msg2.value], (err, res) => {
+    console.log('validate.verifySignatures(hmacKey, [msg1.value, msg2.value], (err, res) => {');
     console.log('err:');
     console.log(err);
     console.log('keys:');
     console.log(res);
     console.log('-------');
-
-    validate.validateSingle(msg1.value, null, (err, res) => {
-      console.log('validate.validateSingle(msg1.value, null, (err, res) => {');
+    
+    validate.validateSingle(hmacKey, msg1.value, null, (err, res) => {
+      console.log('validate.validateSingle(hmacKey, msg1.value, null, (err, res) => {');
       console.log('err:');
       console.log(err);
       console.log('keys:');
       console.log(res);
       console.log('-------');
 
-      validate.validateBatch([msg1.value, msg2.value], null, (err, res) => {
-        console.log('validate.validateBatch([msg1.value, msg2.value], null, (err, res) => {');
+      validate.validateBatch(hmacKey, [msg1.value, msg2.value], null, (err, res) => {
+        console.log('validate.validateBatch(hmacKey, [msg1.value, msg2.value], null, (err, res) => {');
         console.log('err:');
         console.log(err);
         console.log('keys:');

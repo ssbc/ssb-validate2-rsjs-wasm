@@ -27,8 +27,10 @@ const validate = require('ssb-validate2-rsjs-wasm');
 And then all its APIs are callback-based, but you *must* call `ready()` first, just once. Note that the messages are expected to be message `value` objects (*not* `KVT` objects). An array of keys is returned on success:
 
 ```js
+const hmacKey = null;
+
 validate.ready(() => {
-  validate.verifySignatures([msg1, msg2], (err, res) => {
+  validate.verifySignatures(hmacKey, [msg1, msg2], (err, res) => {
     if (err) console.log(err);
     // print the keys array (includes keys for msg1 and msg2, in order)
     else console.log(res);

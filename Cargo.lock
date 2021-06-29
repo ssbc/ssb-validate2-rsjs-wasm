@@ -34,21 +34,6 @@ checksum = "cdb031dd78e28731d87d56cc8ffef4a8f36ca26c38fe2de700543e627f8a464a"
 
 [[package]]
 name = "base64"
-version = "0.10.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0b25d992356d2eb0ed82172f5248873db5560c4721f564b13cb5193bda5e668e"
-dependencies = [
- "byteorder",
-]
-
-[[package]]
-name = "base64"
-version = "0.11.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b41b7ea54a0c9d92199de89e20e58d49f02f8e699814ef3fdf266f6f748d15c7"
-
-[[package]]
-name = "base64"
 version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "904dfeac50f3cdaba28fc6f57fdcddb75f49ed61346676a78c4ffe55877802fd"
@@ -263,6 +248,12 @@ name = "fake-simd"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e88a8acf291dafb59c2d96e8f59828f3838bb1a70398823ade51a84de6a6deed"
+
+[[package]]
+name = "fnv"
+version = "1.0.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3f9eec918d3f24069decb9af1554cad7c880e2da24a9afd88aca000531ab82c1"
 
 [[package]]
 name = "generic-array"
@@ -637,6 +628,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "serde-wasm-bindgen"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1102fa7714968fcf70fd8efa29fb3b189e20ef0e7701fbab9634384dda034bf3"
+dependencies = [
+ "fnv",
+ "js-sys",
+ "serde",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "serde_derive"
 version = "1.0.126"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -722,7 +725,7 @@ version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b53ec8f655fb4128b3cdb9b5c981ef46944d8d95c14c958c4749aa78d2a8918d"
 dependencies = [
- "base64 0.13.0",
+ "base64",
  "curve25519-dalek",
  "ed25519-dalek",
  "hmac",
@@ -737,25 +740,11 @@ dependencies = [
 
 [[package]]
 name = "ssb-legacy-msg-data"
-version = "0.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ee9169f31b74aeae161e315af7da6fbc9c41a1c8b38c586d7f8df26d3eb43251"
-dependencies = [
- "base64 0.10.1",
- "encode_unicode",
- "indexmap",
- "ryu-ecmascript",
- "serde",
- "serde_derive",
- "strtod2",
-]
-
-[[package]]
-name = "ssb-legacy-msg-data"
 version = "0.1.3"
-source = "git+https://github.com/sunrise-choir/legacy-msg-data#62671a1285af5765673429e39979cccb4bb5179f"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0e64af218ed18ae36f7b08b01ed40a0f0b8e933884221500837c51da4097de30"
 dependencies = [
- "base64 0.13.0",
+ "base64",
  "encode_unicode",
  "indexmap",
  "ryu-ecmascript",
@@ -766,11 +755,11 @@ dependencies = [
 
 [[package]]
 name = "ssb-multiformats"
-version = "0.4.0"
+version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7ff05b36f54bbcf7f4bbdbda7da45d75dc700e70cb42fafd7aac58bdaaafc751"
+checksum = "1664eafd1d51fdf33bb46a970c6a18d8192c371d68c022f4d5766de751a76957"
 dependencies = [
- "base64 0.11.0",
+ "base64",
  "serde",
  "ssb-crypto",
 ]
@@ -778,7 +767,8 @@ dependencies = [
 [[package]]
 name = "ssb-validate"
 version = "1.4.0"
-source = "git+https://github.com/sunrise-choir/ssb-validate#f1badfbb8238ac81de4ecf7ac12cb0727f070df7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f8459a94bd70b827018b5186c4857853ba06c18472a282a08c3c859fe8174591"
 dependencies = [
  "lazy_static",
  "rayon",
@@ -786,14 +776,16 @@ dependencies = [
  "serde",
  "sha2 0.8.2",
  "snafu",
- "ssb-legacy-msg-data 0.1.3",
+ "ssb-legacy-msg-data",
  "ssb-multiformats",
 ]
 
 [[package]]
 name = "ssb-validate2-rsjs-wasm"
-version = "0.5.0"
+version = "0.5.1"
 dependencies = [
+ "serde-wasm-bindgen",
+ "ssb-crypto",
  "ssb-validate",
  "ssb-verify-signatures",
  "wasm-bindgen",
@@ -802,11 +794,12 @@ dependencies = [
 
 [[package]]
 name = "ssb-verify-signatures"
-version = "1.0.1"
-source = "git+https://github.com/sunrise-choir/ssb-verify-signatures#973f10918edc533db1cafe4876a7f2838289cefe"
+version = "1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fcebd0c134f3169e2af874eacb6273c03dc54d6080e7b29b3bf58adc25ea2806"
 dependencies = [
  "arrayvec",
- "base64 0.13.0",
+ "base64",
  "ed25519-dalek",
  "getrandom 0.2.3",
  "itertools",
@@ -817,7 +810,8 @@ dependencies = [
  "serde",
  "serde_json",
  "snafu",
- "ssb-legacy-msg-data 0.1.2",
+ "ssb-crypto",
+ "ssb-legacy-msg-data",
 ]
 
 [[package]]
