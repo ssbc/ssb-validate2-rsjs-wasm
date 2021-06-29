@@ -782,7 +782,7 @@ dependencies = [
 
 [[package]]
 name = "ssb-validate2-rsjs-wasm"
-version = "0.5.0"
+version = "0.5.1"
 dependencies = [
  "serde-wasm-bindgen",
  "ssb-crypto",

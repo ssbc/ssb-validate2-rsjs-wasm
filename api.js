@@ -9,14 +9,13 @@ import {
 } from "./pkg/ssb_validate2_rsjs_wasm.js";
 
 // "The buffer module from node.js, for the browser"
-const Buffer = require('buffer/').Buffer;
+const Buffer = require("buffer/").Buffer;
 
 const stringify = (msg) => JSON.stringify(msg, null, 2);
 
-const verifySignatures = (hmacKey, msgs) => {
-  if (!Array.isArray(msgs)) return "input must be an array of message objects";
-  const jsonMsgs = msgs.map(stringify);
+const toBuffer = (hmacKey) => {
   let hmacVal;
+  let err;
   if (!hmacKey) {
     hmacVal = null;
   } else {
@@ -25,26 +24,24 @@ const verifySignatures = (hmacKey, msgs) => {
       : Buffer.from(hmacKey, "base64");
     if (typeof hmacKey === "string") {
       if (hmacVal.toString("base64") !== hmacKey)
-        return "hmac key invalid: string must be base64 encoded";
+        err = "hmac key invalid: string must be base64 encoded";
     }
   }
+  return [err, hmacVal];
+};
+
+const verifySignatures = (hmacKey, msgs) => {
+  if (!Array.isArray(msgs)) return "input must be an array of message objects";
+  const jsonMsgs = msgs.map(stringify);
+  const [err, hmacVal] = toBuffer(hmacKey);
+  if (err) return [err];
   return verifySignaturesWasm(hmacVal, jsonMsgs);
 };
 
 const validateSingle = (hmacKey, msg, previous) => {
   const jsonMsg = stringify(msg);
-  let hmacVal;
-  if (!hmacKey) {
-    hmacVal = null;
-  } else {
-    hmacVal = Buffer.isBuffer(hmacKey)
-      ? hmacKey
-      : Buffer.from(hmacKey, "base64");
-    if (typeof hmacKey === "string") {
-      if (hmacVal.toString("base64") !== hmacKey)
-        return "hmac key invalid: string must be base64 encoded";
-    }
-  }
+  const [err, hmacVal] = toBuffer(hmacKey);
+  if (err) return [err];
   if (previous) {
     const jsonPrevious = stringify(previous);
     // `result` is a string of the hash (`key`) for the given `jsonMsg` value
@@ -56,18 +53,8 @@ const validateSingle = (hmacKey, msg, previous) => {
 const validateBatch = (hmacKey, msgs, previous) => {
   if (!Array.isArray(msgs)) return "input must be an array of message objects";
   const jsonMsgs = msgs.map(stringify);
-  let hmacVal;
-  if (!hmacKey) {
-    hmacVal = null;
-  } else {
-    hmacVal = Buffer.isBuffer(hmacKey)
-      ? hmacKey
-      : Buffer.from(hmacKey, "base64");
-    if (typeof hmacKey === "string") {
-      if (hmacVal.toString("base64") !== hmacKey)
-        return "hmac key invalid: string must be base64 encoded";
-    }
-  }
+  const [err, hmacVal] = toBuffer(hmacKey);
+  if (err) return [err];
   if (previous) {
     const jsonPrevious = stringify(previous);
     // `result` is an array of strings (each string a `key`) for the given `jsonMsgs`
@@ -79,36 +66,16 @@ const validateBatch = (hmacKey, msgs, previous) => {
 const validateOOOBatch = (hmacKey, msgs) => {
   if (!Array.isArray(msgs)) return "input must be an array of message objects";
   const jsonMsgs = msgs.map(stringify);
-  let hmacVal;
-  if (!hmacKey) {
-    hmacVal = null;
-  } else {
-    hmacVal = Buffer.isBuffer(hmacKey)
-      ? hmacKey
-      : Buffer.from(hmacKey, "base64");
-    if (typeof hmacKey === "string") {
-      if (hmacVal.toString("base64") !== hmacKey)
-        return "hmac key invalid: string must be base64 encoded";
-    }
-  }
+  const [err, hmacVal] = toBuffer(hmacKey);
+  if (err) return [err];
   return validateOOOBatchWasm(hmacVal, jsonMsgs);
 };
 
 const validateMultiAuthorBatch = (hmacKey, msgs) => {
   if (!Array.isArray(msgs)) return "input must be an array of message objects";
   const jsonMsgs = msgs.map(stringify);
-  let hmacVal;
-  if (!hmacKey) {
-    hmacVal = null;
-  } else {
-    hmacVal = Buffer.isBuffer(hmacKey)
-      ? hmacKey
-      : Buffer.from(hmacKey, "base64");
-    if (typeof hmacKey === "string") {
-      if (hmacVal.toString("base64") !== hmacKey)
-        return "hmac key invalid: string must be base64 encoded";
-    }
-  }
+  const [err, hmacVal] = toBuffer(hmacKey);
+  if (err) return [err];
   return validateMultiAuthorBatchWasm(hmacVal, jsonMsgs);
 };
 
