@@ -14,4 +14,4 @@ goals
 /test
 /webpack.config.js
 /.cargo/config
-karma.conf.js
+/karma.conf.js
