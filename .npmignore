@@ -13,6 +13,5 @@ goals
 /server.py
 /test
 /webpack.config.js
-/worker.js
 /.cargo/config
 karma.conf.js
