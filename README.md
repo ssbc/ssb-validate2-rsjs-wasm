@@ -79,6 +79,16 @@ If you wish to debug the tests it is recommended to set `singleRun: false,` in t
 
 WebAssembly modules must be loaded and run off the main thread (aka the 'UI thread'). We utilise the [Comlink](https://github.com/GoogleChromeLabs/comlink) library to create and manage WebWorkers to achieve the required separation. `worker.js` imports the WASM initialisation and wrapper methods from `index.js`, as well as the `comlink.mjs` module, and defines a `Validator` class. The class is exported for use in the calling module (see `example/main.js` or `test/test.js` for usage). Comlink exposes an `async`, RPC-like interface for our underlying WASM methods.
 
+## Releasing New Versions
+
+To release a new version:
+
+1. Run `npm run build`
+1. **Delete** `pkg/package.json` generated from the step above
+1. Update the version number in `package.json`
+1. Commit with a message that starts with the word "release", e.g. `release 1.1.0`
+1. Run `npm publish`
+
 ## Useful Documentation
 
 The [wasm-bindgen book](https://rustwasm.github.io/docs/wasm-bindgen/introduction.html) provides detailed information about WebAssembly in the context of Rust.
