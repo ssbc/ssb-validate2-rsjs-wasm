@@ -10,7 +10,8 @@ module.exports = function (config) {
     frameworks: ["mocha", "esm"],
 
     // list of files / patterns to load in the browser
-    files: [{ pattern: "test/test.mjs", type: "module" }],
+    //files: [{ pattern: "test/test.mjs", type: "module" }],
+    files: [{ pattern: "test/perf.mjs", type: "module" }],
 
     // list of files / patterns to exclude
     exclude: [],
@@ -60,7 +61,7 @@ module.exports = function (config) {
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
     // Set this to `false` for easier in-browser debugging
-    singleRun: true,
+    singleRun: false,
 
     // Concurrency level
     // how many browser should be started simultaneous

@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
+use std::panic;
+
 use ssb_crypto::{AsBytes, NetworkKey as MsgHmacKey};
 use ssb_validate::{
     message_value::{
@@ -9,7 +11,7 @@ use ssb_validate::{
     },
     utils,
 };
-use ssb_verify_signatures::verify_message_value;
+use ssb_verify_signatures::{par_verify_message_values, verify_message_value};
 use wasm_bindgen::prelude::*;
 pub use wasm_bindgen_rayon::init_thread_pool;
 
@@ -184,6 +186,8 @@ pub fn verify_validate_messages(
     array: JsValue,
     previous: Option<String>,
 ) -> JsValue {
+    panic::set_hook(Box::new(console_error_panic_hook::hook));
+    web_sys::console::time_with_label("parsing hmac key");
     let hmac_key: Option<Vec<u8>> = match serde_wasm_bindgen::from_value(hmac_key) {
         Ok(hmac) => hmac,
         Err(_) => {
@@ -192,7 +196,9 @@ pub fn verify_validate_messages(
             return JsValue::from_serde(&response).unwrap();
         }
     };
+    web_sys::console::time_end_with_label("parsing hmac key");
 
+    web_sys::console::time_with_label("validating hmac key");
     let valid_hmac = match is_valid_hmac_key(hmac_key) {
         Ok(key) => key,
         Err(err_msg) => {
@@ -201,33 +207,46 @@ pub fn verify_validate_messages(
         }
     };
     let hmac = valid_hmac.as_deref();
+    web_sys::console::time_end_with_label("validating hmac key");
 
+    web_sys::console::time_with_label("deserializing messages");
     let elements: Vec<String> = array.into_serde().unwrap();
+    web_sys::console::time_end_with_label("deserializing messages");
+    web_sys::console::time_with_label("converting messages to bytes");
     let mut msgs = Vec::new();
     for msg in elements {
         let msg_bytes = msg.into_bytes();
         msgs.push(msg_bytes)
     }
+    web_sys::console::time_end_with_label("converting messages to bytes");
 
     let previous_msg = previous.map(|msg| msg.into_bytes());
 
     // we're not running parallel verification here due to rayon issues for wasm:
     // a dependency uses older versions of `rand` and `getrandom`, which fail to provide
     // `thread_rng` when parallel verification is attempted in the browser.
-    for msg_bytes in &msgs {
-        // attempt verification and match on error to find invalid message
-        match verify_message_value(&msg_bytes, hmac) {
-            Ok(_) => (),
-            Err(e) => {
-                let invalid_msg_str = std::str::from_utf8(msg_bytes).unwrap();
-                let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
-                let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
-                return JsValue::from_serde(&response).unwrap();
-            }
-        };
-    }
+    web_sys::console::time_with_label("verifying messages (one by one)");
+    //for msg_bytes in &msgs {
+    // attempt verification and match on error to find invalid message
+    /* BATCH EXPERIMENT */
+    match par_verify_message_values(&msgs, hmac, None) {
+        Ok(_) => (),
+        Err(e) => {
+            let invalid_message = &msgs
+                .iter()
+                .find(|msg| verify_message_value(msg, hmac).is_err())
+                .unwrap();
+            let invalid_msg_str = std::str::from_utf8(invalid_message).unwrap();
+            let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
+            let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
+            return JsValue::from_serde(&response).unwrap();
+        }
+    };
+    //}
+    web_sys::console::time_end_with_label("verifying messages (one by one)");
 
     // attempt batch validation and match on error to find invalid message
+    web_sys::console::time_with_label("validating messages (parallel)");
     match par_validate_message_value_hash_chain_of_feed(&msgs, previous_msg.as_ref()) {
         Ok(_) => (),
         Err(e) => {
@@ -241,10 +260,16 @@ pub fn verify_validate_messages(
             return JsValue::from_serde(&response).unwrap();
         }
     }
+    web_sys::console::time_end_with_label("validating messages (parallel)");
 
+    web_sys::console::time_with_label("hashing messages");
     let keys = hash(msgs);
+    web_sys::console::time_end_with_label("hashing messages");
     let response: (Option<String>, Option<Vec<String>>) = (None, Some(keys));
-    JsValue::from_serde(&response).unwrap()
+    web_sys::console::time_with_label("serializing message keys");
+    let keys = JsValue::from_serde(&response).unwrap();
+    web_sys::console::time_end_with_label("serializing message keys");
+    keys
 }
 
 /// Verify signatures and perform validation for an array of out-of-order messages by a single

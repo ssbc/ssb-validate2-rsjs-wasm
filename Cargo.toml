@@ -12,5 +12,10 @@ ssb-crypto = "0.2.2"
 serde-wasm-bindgen = "0.3.0"
 ssb-validate = "1.4.0"
 ssb-verify-signatures = "1.1.0"
+#ssb-verify-signatures = { path = "../ssb-verify-signatures" }
 wasm-bindgen = { version = "0.2", features = ["serde-serialize"] }
 wasm-bindgen-rayon = "1.0"
+web-sys = { version = "0.3.51", features = ["console"] }
+console_error_panic_hook = "0.1.6"
+#rand = { version = "0.7", features = ["getrandom"] }
+getrandom = { version = "0.2", features = ["js"] }

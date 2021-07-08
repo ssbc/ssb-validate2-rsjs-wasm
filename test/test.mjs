@@ -1,5 +1,6 @@
 import * as Comlink from "comlink";
 import singleAuthorMsgs from "./data/singleAuthorMsgs.js";
+import singleAuthorMsgs7000 from "./data/singleAuthorMsgs7000.js";
 import singleAuthorMsgsKeys from "./data/singleAuthorMsgsKeys.js";
 import multiAuthorMsgs from "./data/multiAuthorMsgs.js";
 import validMsg from "./data/valid.js";
@@ -67,6 +68,7 @@ describe("test: ", function () {
   });
 
   it("batch verification of message signatures", function (done) {
+    console.log("[ BATCH VERIFICATION ]");
     const msgs = singleAuthorMsgs.map((msg) => msg.value);
     validate.verifySignatures(hmacKey1, msgs, (err, res) => {
       // ensure the pre-defined keys array matches the returned keys array
@@ -174,8 +176,11 @@ describe("test: ", function () {
   });
 
   it("batch validation of full feed", function (done) {
-    const msgs = singleAuthorMsgs.map((msg) => msg.value);
+    console.log("[ BATCH VALIDATION ( 7000 ) ]");
+    const msgs = singleAuthorMsgs7000.map((msg) => msg.value);
+    console.time("TEST: calling validateBatch");
     validate.validateBatch(hmacKey1, msgs, null, (err, res) => {
+      console.timeEnd("TEST: calling validateBatch");
       const isEqual =
         JSON.stringify(singleAuthorMsgsKeys) === JSON.stringify(res);
       if (!err && isEqual) done();
@@ -184,6 +189,7 @@ describe("test: ", function () {
   });
 
   it("batch validation of partial feed (previous seq == 1)", function (done) {
+    console.log("[ BATCH VALIDATION ( PARTIAL FEED ) ]");
     const msgs = singleAuthorMsgs.map((msg) => msg.value);
     const mutMsgs = [...msgs];
     // shift first msg into `previous`
