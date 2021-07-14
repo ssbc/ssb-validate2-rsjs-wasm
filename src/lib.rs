@@ -57,7 +57,10 @@ pub fn verify_messages(hmac_key: JsValue, array: JsValue) -> JsValue {
         Err(_) => {
             let err_msg = "hmac key invalid: must be null, undefined, string or buffer".to_string();
             let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
-            return JsValue::from_serde(&response).unwrap();
+            // TODO: find a more efficient approach to return the response
+            // see wasm_bindgen docs for info on why this is slow (esp. with large payloads)
+            return JsValue::from_serde(&response)
+                .expect("failed to serialize response for hmac key value error");
         }
     };
 
@@ -65,12 +68,15 @@ pub fn verify_messages(hmac_key: JsValue, array: JsValue) -> JsValue {
         Ok(key) => key,
         Err(err_msg) => {
             let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
-            return JsValue::from_serde(&response).unwrap();
+            return JsValue::from_serde(&response)
+                .expect("failed to serialize response for invalid hmac key error");
         }
     };
     let hmac = valid_hmac.as_deref();
 
-    let elements: Vec<String> = array.into_serde().unwrap();
+    let elements: Vec<String> = array
+        .into_serde()
+        .expect("failed to deserialize js message array into vector of strings");
     let mut msgs = Vec::new();
     for msg in elements {
         let msg_bytes = msg.into_bytes();
@@ -82,17 +88,21 @@ pub fn verify_messages(hmac_key: JsValue, array: JsValue) -> JsValue {
         match verify_message_value(&msg_bytes, hmac) {
             Ok(_) => (),
             Err(e) => {
-                let invalid_msg_str = std::str::from_utf8(msg_bytes).unwrap();
+                let invalid_msg_str = std::str::from_utf8(msg_bytes).unwrap_or(
+                    "unable to convert invalid message bytes to string slice; not valid utf8",
+                );
                 let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
                 let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
-                return JsValue::from_serde(&response).unwrap();
+                return JsValue::from_serde(&response)
+                    .expect("failed to serialize response with invalid message error");
             }
         };
     }
 
     let keys = hash(msgs);
     let response: (Option<String>, Option<Vec<String>>) = (None, Some(keys));
-    JsValue::from_serde(&response).unwrap()
+    JsValue::from_serde(&response)
+        .expect("failed to serialize response with successfully verified keys")
 }
 
 /// Verify signature and perform validation for a single message (includes HMAC key support).
@@ -123,7 +133,8 @@ pub fn verify_validate_message(
         Err(_) => {
             let err_msg = "hmac key invalid: must be null, undefined, string or buffer".to_string();
             let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
-            return JsValue::from_serde(&response).unwrap();
+            return JsValue::from_serde(&response)
+                .expect("failed to serialize response for hmac key value error");
         }
     };
 
@@ -131,7 +142,8 @@ pub fn verify_validate_message(
         Ok(key) => key,
         Err(err_msg) => {
             let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
-            return JsValue::from_serde(&response).unwrap();
+            return JsValue::from_serde(&response)
+                .expect("failed to serialize response for invalid hmac key error");
         }
     };
     let hmac = valid_hmac.as_deref();
@@ -143,10 +155,12 @@ pub fn verify_validate_message(
     match verify_message_value(&msg_bytes, hmac) {
         Ok(_) => (),
         Err(e) => {
-            let invalid_msg_str = std::str::from_utf8(&msg_bytes).unwrap();
+            let invalid_msg_str = std::str::from_utf8(&msg_bytes).unwrap_or(
+                "unable to convert invalid message bytes to string slice; not valid utf8",
+            );
             let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
             let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
-            return JsValue::from_serde(&response).unwrap();
+            return JsValue::from_serde(&response).expect("failed to serialize response with invalid message error");
         }
     };
 
@@ -154,10 +168,12 @@ pub fn verify_validate_message(
     match validate_message_value_hash_chain(&msg_bytes, previous_msg_bytes) {
         Ok(_) => (),
         Err(e) => {
-            let invalid_msg_str = std::str::from_utf8(&msg_bytes).unwrap();
+            let invalid_msg_str = std::str::from_utf8(&msg_bytes).unwrap_or(
+                "unable to convert invalid message bytes to string slice; not valid utf8",
+            );
             let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
             let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
-            return JsValue::from_serde(&response).unwrap();
+            return JsValue::from_serde(&response).expect("failed to serialize response with invalid message error");
         }
     }
 
@@ -165,7 +181,7 @@ pub fn verify_validate_message(
     let multihash = utils::multihash_from_bytes(&msg_bytes);
     let key = multihash.to_legacy_string();
     let response: (Option<String>, Option<String>) = (None, Some(key));
-    JsValue::from_serde(&response).unwrap()
+    JsValue::from_serde(&response).expect("failed to serialize response with successfully verified keys")
 }
 
 /// Verify signatures and perform validation for an array of ordered message values by a single
@@ -189,7 +205,8 @@ pub fn verify_validate_messages(
         Err(_) => {
             let err_msg = "hmac key invalid: must be null, undefined, string or buffer".to_string();
             let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
-            return JsValue::from_serde(&response).unwrap();
+            return JsValue::from_serde(&response)
+                .expect("failed to serialize response for hmac key value error");
         }
     };
 
@@ -197,12 +214,13 @@ pub fn verify_validate_messages(
         Ok(key) => key,
         Err(err_msg) => {
             let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
-            return JsValue::from_serde(&response).unwrap();
+            return JsValue::from_serde(&response)
+                .expect("failed to serialize response for invalid hmac key error");
         }
     };
     let hmac = valid_hmac.as_deref();
 
-    let elements: Vec<String> = array.into_serde().unwrap();
+    let elements: Vec<String> = array.into_serde().expect("failed to deserialize js message array into vector of strings");
     let mut msgs = Vec::new();
     for msg in elements {
         let msg_bytes = msg.into_bytes();
@@ -219,10 +237,12 @@ pub fn verify_validate_messages(
         match verify_message_value(&msg_bytes, hmac) {
             Ok(_) => (),
             Err(e) => {
-                let invalid_msg_str = std::str::from_utf8(msg_bytes).unwrap();
+                let invalid_msg_str = std::str::from_utf8(msg_bytes).unwrap_or(
+                    "unable to convert invalid message bytes to string slice; not valid utf8",
+                );
                 let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
                 let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
-                return JsValue::from_serde(&response).unwrap();
+                return JsValue::from_serde(&response).expect("failed to serialize response with invalid message error");
             }
         };
     }
@@ -231,20 +251,24 @@ pub fn verify_validate_messages(
     match par_validate_message_value_hash_chain_of_feed(&msgs, previous_msg.as_ref()) {
         Ok(_) => (),
         Err(e) => {
-            let invalid_message = &msgs
+            let invalid_msg = &msgs
                 .iter()
-                .find(|msg| validate_message_value_hash_chain(msg, previous_msg.as_ref()).is_err())
-                .unwrap();
-            let invalid_msg_str = std::str::from_utf8(invalid_message).unwrap();
+                .find(|msg| validate_message_value_hash_chain(msg, previous_msg.as_ref()).is_err());
+            let invalid_msg_str = match invalid_msg {
+                Some(msg) => std::str::from_utf8(msg).unwrap_or(
+                    "unable to convert invalid message bytes to string slice; not valid utf8",
+                ),
+                None => "parallel validation failed but no single invalid message was found",
+            };
             let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
             let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
-            return JsValue::from_serde(&response).unwrap();
+            return JsValue::from_serde(&response).expect("failed to serialize response with invalid message error");
         }
     }
 
     let keys = hash(msgs);
     let response: (Option<String>, Option<Vec<String>>) = (None, Some(keys));
-    JsValue::from_serde(&response).unwrap()
+    JsValue::from_serde(&response).expect("failed to serialize response with successfully verified keys")
 }
 
 /// Verify signatures and perform validation for an array of out-of-order messages by a single
@@ -262,7 +286,8 @@ pub fn verify_validate_out_of_order_messages(hmac_key: JsValue, array: JsValue) 
         Err(_) => {
             let err_msg = "hmac key invalid: must be null, undefined, string or buffer".to_string();
             let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
-            return JsValue::from_serde(&response).unwrap();
+            return JsValue::from_serde(&response)
+                .expect("failed to serialize response for hmac key value error");
         }
     };
 
@@ -270,12 +295,13 @@ pub fn verify_validate_out_of_order_messages(hmac_key: JsValue, array: JsValue) 
         Ok(key) => key,
         Err(err_msg) => {
             let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
-            return JsValue::from_serde(&response).unwrap();
+            return JsValue::from_serde(&response)
+                .expect("failed to serialize response for invalid hmac key error");
         }
     };
     let hmac = valid_hmac.as_deref();
 
-    let elements: Vec<String> = array.into_serde().unwrap();
+    let elements: Vec<String> = array.into_serde().expect("failed to deserialize js message array into vector of strings");
     let mut msgs = Vec::new();
     for msg in elements {
         let msg_bytes = msg.into_bytes();
@@ -287,10 +313,12 @@ pub fn verify_validate_out_of_order_messages(hmac_key: JsValue, array: JsValue) 
         match verify_message_value(&msg_bytes, hmac) {
             Ok(_) => (),
             Err(e) => {
-                let invalid_msg_str = std::str::from_utf8(msg_bytes).unwrap();
+                let invalid_msg_str = std::str::from_utf8(msg_bytes).unwrap_or(
+                    "unable to convert invalid message bytes to string slice; not valid utf8",
+                );
                 let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
                 let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
-                return JsValue::from_serde(&response).unwrap();
+                return JsValue::from_serde(&response).expect("failed to serialize response with invalid message error");
             }
         };
     }
@@ -300,20 +328,24 @@ pub fn verify_validate_out_of_order_messages(hmac_key: JsValue, array: JsValue) 
     match par_validate_ooo_message_value_hash_chain_of_feed::<_, &[u8]>(&msgs, None) {
         Ok(_) => (),
         Err(e) => {
-            let invalid_message = &msgs
+            let invalid_msg = &msgs
                 .iter()
-                .find(|msg| validate_ooo_message_value_hash_chain::<_, &[u8]>(msg, None).is_err())
-                .unwrap();
-            let invalid_msg_str = std::str::from_utf8(invalid_message).unwrap();
+                .find(|msg| validate_ooo_message_value_hash_chain::<_, &[u8]>(msg, None).is_err());
+            let invalid_msg_str = match invalid_msg {
+                Some(msg) => std::str::from_utf8(msg).unwrap_or(
+                    "unable to convert invalid message bytes to string slice; not valid utf8",
+                ),
+                None => "parallel validation failed but no single invalid message was found",
+            };
             let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
             let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
-            return JsValue::from_serde(&response).unwrap();
+            return JsValue::from_serde(&response).expect("failed to serialize response with invalid message error");
         }
     }
 
     let keys = hash(msgs);
     let response: (Option<String>, Option<Vec<String>>) = (None, Some(keys));
-    JsValue::from_serde(&response).unwrap()
+    JsValue::from_serde(&response).expect("failed to serialize response with successfully verified keys")
 }
 
 /// Verify signatures and perform validation for an array of out-of-order messages by multiple
@@ -331,7 +363,8 @@ pub fn verify_validate_multi_author_messages(hmac_key: JsValue, array: JsValue) 
         Err(_) => {
             let err_msg = "hmac key invalid: must be null, undefined, string or buffer".to_string();
             let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
-            return JsValue::from_serde(&response).unwrap();
+            return JsValue::from_serde(&response)
+                .expect("failed to serialize response for hmac key value error");
         }
     };
 
@@ -339,12 +372,13 @@ pub fn verify_validate_multi_author_messages(hmac_key: JsValue, array: JsValue) 
         Ok(key) => key,
         Err(err_msg) => {
             let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
-            return JsValue::from_serde(&response).unwrap();
+            return JsValue::from_serde(&response)
+                .expect("failed to serialize response for invalid hmac key error");
         }
     };
     let hmac = valid_hmac.as_deref();
 
-    let elements: Vec<String> = array.into_serde().unwrap();
+    let elements: Vec<String> = array.into_serde().expect("failed to deserialize js message array into vector of strings");
     let mut msgs = Vec::new();
     for msg in elements {
         let msg_bytes = msg.into_bytes();
@@ -356,10 +390,12 @@ pub fn verify_validate_multi_author_messages(hmac_key: JsValue, array: JsValue) 
         match verify_message_value(&msg_bytes, hmac) {
             Ok(_) => (),
             Err(e) => {
-                let invalid_msg_str = std::str::from_utf8(msg_bytes).unwrap();
+                let invalid_msg_str = std::str::from_utf8(msg_bytes).unwrap_or(
+                    "unable to convert invalid message bytes to string slice; not valid utf8",
+                );
                 let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
                 let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
-                return JsValue::from_serde(&response).unwrap();
+                return JsValue::from_serde(&response).expect("failed to serialize response with invalid message error");
             }
         };
     }
@@ -368,18 +404,20 @@ pub fn verify_validate_multi_author_messages(hmac_key: JsValue, array: JsValue) 
     match par_validate_message_value(&msgs) {
         Ok(_) => (),
         Err(e) => {
-            let invalid_message = &msgs
-                .iter()
-                .find(|msg| validate_message_value(msg).is_err())
-                .unwrap();
-            let invalid_msg_str = std::str::from_utf8(invalid_message).unwrap();
+            let invalid_msg = &msgs.iter().find(|msg| validate_message_value(msg).is_err());
+            let invalid_msg_str = match invalid_msg {
+                Some(msg) => std::str::from_utf8(msg).unwrap_or(
+                    "unable to convert invalid message bytes to string slice; not valid utf8",
+                ),
+                None => "parallel validation failed but no single invalid message was found",
+            };
             let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
             let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
-            return JsValue::from_serde(&response).unwrap();
+            return JsValue::from_serde(&response).expect("failed to serialize response with invalid message error");
         }
     }
 
     let keys = hash(msgs);
     let response: (Option<String>, Option<Vec<String>>) = (None, Some(keys));
-    JsValue::from_serde(&response).unwrap()
+    JsValue::from_serde(&response).expect("failed to serialize response with successfully verified keys")
 }
