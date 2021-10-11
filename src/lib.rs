@@ -1,4 +1,6 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-FileCopyrightText: 2021 Andrew 'glyph' Reid
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
 use ssb_crypto::{AsBytes, NetworkKey as MsgHmacKey};
 use ssb_validate::{
@@ -160,7 +162,8 @@ pub fn verify_validate_message(
             );
             let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
             let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
-            return JsValue::from_serde(&response).expect("failed to serialize response with invalid message error");
+            return JsValue::from_serde(&response)
+                .expect("failed to serialize response with invalid message error");
         }
     };
 
@@ -173,7 +176,8 @@ pub fn verify_validate_message(
             );
             let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
             let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
-            return JsValue::from_serde(&response).expect("failed to serialize response with invalid message error");
+            return JsValue::from_serde(&response)
+                .expect("failed to serialize response with invalid message error");
         }
     }
 
@@ -181,7 +185,8 @@ pub fn verify_validate_message(
     let multihash = utils::multihash_from_bytes(&msg_bytes);
     let key = multihash.to_legacy_string();
     let response: (Option<String>, Option<String>) = (None, Some(key));
-    JsValue::from_serde(&response).expect("failed to serialize response with successfully verified keys")
+    JsValue::from_serde(&response)
+        .expect("failed to serialize response with successfully verified keys")
 }
 
 /// Verify signatures and perform validation for an array of ordered message values by a single
@@ -220,7 +225,9 @@ pub fn verify_validate_messages(
     };
     let hmac = valid_hmac.as_deref();
 
-    let elements: Vec<String> = array.into_serde().expect("failed to deserialize js message array into vector of strings");
+    let elements: Vec<String> = array
+        .into_serde()
+        .expect("failed to deserialize js message array into vector of strings");
     let mut msgs = Vec::new();
     for msg in elements {
         let msg_bytes = msg.into_bytes();
@@ -242,7 +249,8 @@ pub fn verify_validate_messages(
                 );
                 let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
                 let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
-                return JsValue::from_serde(&response).expect("failed to serialize response with invalid message error");
+                return JsValue::from_serde(&response)
+                    .expect("failed to serialize response with invalid message error");
             }
         };
     }
@@ -262,13 +270,15 @@ pub fn verify_validate_messages(
             };
             let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
             let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
-            return JsValue::from_serde(&response).expect("failed to serialize response with invalid message error");
+            return JsValue::from_serde(&response)
+                .expect("failed to serialize response with invalid message error");
         }
     }
 
     let keys = hash(msgs);
     let response: (Option<String>, Option<Vec<String>>) = (None, Some(keys));
-    JsValue::from_serde(&response).expect("failed to serialize response with successfully verified keys")
+    JsValue::from_serde(&response)
+        .expect("failed to serialize response with successfully verified keys")
 }
 
 /// Verify signatures and perform validation for an array of out-of-order messages by a single
@@ -301,7 +311,9 @@ pub fn verify_validate_out_of_order_messages(hmac_key: JsValue, array: JsValue) 
     };
     let hmac = valid_hmac.as_deref();
 
-    let elements: Vec<String> = array.into_serde().expect("failed to deserialize js message array into vector of strings");
+    let elements: Vec<String> = array
+        .into_serde()
+        .expect("failed to deserialize js message array into vector of strings");
     let mut msgs = Vec::new();
     for msg in elements {
         let msg_bytes = msg.into_bytes();
@@ -318,7 +330,8 @@ pub fn verify_validate_out_of_order_messages(hmac_key: JsValue, array: JsValue) 
                 );
                 let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
                 let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
-                return JsValue::from_serde(&response).expect("failed to serialize response with invalid message error");
+                return JsValue::from_serde(&response)
+                    .expect("failed to serialize response with invalid message error");
             }
         };
     }
@@ -339,13 +352,15 @@ pub fn verify_validate_out_of_order_messages(hmac_key: JsValue, array: JsValue) 
             };
             let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
             let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
-            return JsValue::from_serde(&response).expect("failed to serialize response with invalid message error");
+            return JsValue::from_serde(&response)
+                .expect("failed to serialize response with invalid message error");
         }
     }
 
     let keys = hash(msgs);
     let response: (Option<String>, Option<Vec<String>>) = (None, Some(keys));
-    JsValue::from_serde(&response).expect("failed to serialize response with successfully verified keys")
+    JsValue::from_serde(&response)
+        .expect("failed to serialize response with successfully verified keys")
 }
 
 /// Verify signatures and perform validation for an array of out-of-order messages by multiple
@@ -378,7 +393,9 @@ pub fn verify_validate_multi_author_messages(hmac_key: JsValue, array: JsValue) 
     };
     let hmac = valid_hmac.as_deref();
 
-    let elements: Vec<String> = array.into_serde().expect("failed to deserialize js message array into vector of strings");
+    let elements: Vec<String> = array
+        .into_serde()
+        .expect("failed to deserialize js message array into vector of strings");
     let mut msgs = Vec::new();
     for msg in elements {
         let msg_bytes = msg.into_bytes();
@@ -395,7 +412,8 @@ pub fn verify_validate_multi_author_messages(hmac_key: JsValue, array: JsValue) 
                 );
                 let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
                 let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
-                return JsValue::from_serde(&response).expect("failed to serialize response with invalid message error");
+                return JsValue::from_serde(&response)
+                    .expect("failed to serialize response with invalid message error");
             }
         };
     }
@@ -413,11 +431,13 @@ pub fn verify_validate_multi_author_messages(hmac_key: JsValue, array: JsValue) 
             };
             let err_msg = format!("found invalid message: {}: {}", e, invalid_msg_str);
             let response: (Option<String>, Option<Vec<String>>) = (Some(err_msg), None);
-            return JsValue::from_serde(&response).expect("failed to serialize response with invalid message error");
+            return JsValue::from_serde(&response)
+                .expect("failed to serialize response with invalid message error");
         }
     }
 
     let keys = hash(msgs);
     let response: (Option<String>, Option<Vec<String>>) = (None, Some(keys));
-    JsValue::from_serde(&response).expect("failed to serialize response with successfully verified keys")
+    JsValue::from_serde(&response)
+        .expect("failed to serialize response with successfully verified keys")
 }

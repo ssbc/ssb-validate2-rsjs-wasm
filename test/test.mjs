@@ -1,3 +1,8 @@
+// SPDX-FileCopyrightText: 2021 Andrew 'glyph' Reid
+// SPDX-FileCopyrightText: 2021 Andre 'Staltz' Medeiros
+//
+// SPDX-License-Identifier: Unlicense
+
 import * as Comlink from "comlink";
 import singleAuthorMsgs from "./data/singleAuthorMsgs.js";
 import singleAuthorMsgsKeys from "./data/singleAuthorMsgsKeys.js";

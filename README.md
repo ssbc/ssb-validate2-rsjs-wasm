@@ -1,3 +1,10 @@
+<!--
+SPDX-FileCopyrightText: 2021 Andrew 'glyph' Reid
+SPDX-FileCopyrightText: 2021 Andre 'Staltz' Medeiros
+
+SPDX-License-Identifier: CC0-1.0
+-->
+
 # ssb-validate2-rsjs-wasm
 
 Cryptographic validation of Scuttlebutt messages using WebAssembly.
@@ -95,4 +102,4 @@ The [wasm-bindgen book](https://rustwasm.github.io/docs/wasm-bindgen/introductio
 
 ## License
 
-AGPL 3.0.
+LGPL 3.0.
