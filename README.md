@@ -102,4 +102,4 @@ The [wasm-bindgen book](https://rustwasm.github.io/docs/wasm-bindgen/introductio
 
 ## License
 
-AGPL 3.0.
+LGPL 3.0.
