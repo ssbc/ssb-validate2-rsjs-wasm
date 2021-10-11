@@ -8,7 +8,14 @@
     "url": "https://github.com/ssb-ngi-pointer/ssb-validate2-rsjs-wasm"
   },
   "author": "Andrew Reid <glyph@mycelial.technology>",
-  "license": "AGPL-3.0",
+  "license": "LGPL-3.0",
+  "files": [
+    "*.js",
+    "*.mjs",
+    "package.json.license",
+    "package-lock.json.license",
+    "LICENSES/*"
+  ],
   "devDependencies": {
     "@open-wc/karma-esm": "^4.0.0",
     "assert": "^2.0.0",

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2021 Andrew 'glyph' Reid
+#
+# SPDX-License-Identifier: Unlicense
+
 #!/usr/bin/env python3
 from http.server import HTTPServer, SimpleHTTPRequestHandler, test
 import sys

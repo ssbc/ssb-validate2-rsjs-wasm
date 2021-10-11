@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2021 Andrew 'glyph' Reid
+//
+// SPDX-License-Identifier: Unlicense
+
 export default [
   {
     key: '%txJjB9WAJRQL9DpZkTqq43FPrWY0Yhb2D9TTfkY1GfY=.sha256',

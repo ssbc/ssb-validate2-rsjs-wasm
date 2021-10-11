@@ -1,3 +1,10 @@
+<!--
+SPDX-FileCopyrightText: 2021 Andrew 'glyph' Reid
+SPDX-FileCopyrightText: 2021 Andre 'Staltz' Medeiros
+
+SPDX-License-Identifier: CC0-1.0
+-->
+
 # ssb-validate2-rsjs-wasm
 
 Cryptographic validation of Scuttlebutt messages using WebAssembly.

@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2021 Andrew 'glyph' Reid
+//
+// SPDX-License-Identifier: Unlicense
+
 import * as validate from "../index.mjs";
 import validHmacMsg from "../test/data/validHmac.js";
 const hmacKey = null;

@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2021 Andrew 'glyph' Reid
+//
+// SPDX-License-Identifier: LGPL-3.0-only
+
 import * as Comlink from "comlink";
 
 const wrapped = Comlink.wrap(
