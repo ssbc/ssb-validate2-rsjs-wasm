@@ -1,0 +1,9 @@
+namespace "ssb-validate2"
+
+interface {
+  verifySignatures(hmacKey: bytes?, array: [string]): [string]
+  validateSingle(hmacKey: bytes?, message: string, previous: string?): string
+  validateBatch(hmacKey: bytes?, array: [string], previous: string?): [string]
+  validateOOOBatch(hmacKey: bytes?, array: [string]): [string]
+  validateMultiAuthorBatch(hmacKey: bytes?, array: [string]): [string]
+}

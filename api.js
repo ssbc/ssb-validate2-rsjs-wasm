@@ -2,15 +2,27 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-import {
-  default as init,
-  initThreadPool,
-  verifySignatures as verifySignaturesWasm,
-  validateSingle as validateSingleWasm,
-  validateBatch as validateBatchWasm,
-  validateOOOBatch as validateOOOBatchWasm,
-  validateMultiAuthorBatch as validateMultiAuthorBatchWasm,
-} from "./pkg/ssb_validate2_rsjs_wasm.js";
+import { instantiateStreaming } from "@wapc/host";
+import { encode } from "@msgpack/msgpack";
+
+let host = undefined;
+
+async function verifySignaturesWasm(hmacKey, array) {
+  console.log(hmacKey, array);
+  host.invoke("verifySignatures", encode({ hmacKey, array }));
+}
+async function validateSingleWasm(hmacKey, message, previous) {
+  host.invoke("validateSingle", encode({ hmacKey, message, previous }));
+}
+async function validateBatchWasm(hmacKey, array, previous) {
+  host.invoke("validateBatch", encode({ hmacKey, array, previous }));
+}
+async function validateOOOBatchWasm(hmacKey, array) {
+  host.invoke("validateOOOBatch", encode({ hmacKey, array }));
+}
+async function validateMultiAuthorBatchWasm(hmacKey, array) {
+  host.invoke("validateMultiAuthorBatch", encode({ hmacKey, array }));
+}
 
 // "The buffer module from node.js, for the browser"
 const Buffer = require("buffer/").Buffer;
@@ -89,8 +101,9 @@ const validateMultiAuthorBatch = (hmacKey, msgs) => {
  * One thread is created for each processor core.
  */
 const ready = async () => {
-  await init();
-  await initThreadPool(navigator.hardwareConcurrency);
+  host = await instantiateStreaming(
+    await fetch("./build/ssb_validate2_rsjs_wasm_wapc.wasm")
+  );
 };
 
 export {
