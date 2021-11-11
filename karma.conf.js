@@ -4,6 +4,15 @@
 
 // Karma configuration
 
+const path = require("path");
+const os = require("os");
+// const CopyPlugin = require("copy-webpack-plugin");
+
+const ENTROPY_SIZE = 1000000,
+  outputPath = `${path.join(os.tmpdir(), "_karma_webpack_")}${Math.floor(
+    Math.random() * ENTROPY_SIZE
+  )}`;
+
 module.exports = function (config) {
   config.set({
     // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -11,17 +20,34 @@ module.exports = function (config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ["mocha", "esm"],
+    frameworks: ["mocha", "webpack"],
 
     // list of files / patterns to load in the browser
-    files: [{ pattern: "test/test.mjs", type: "module" }],
+    files: [
+      { pattern: "test/test.js" },
+      {
+        pattern: `${outputPath}/**/*`,
+        watched: false,
+        included: false,
+      },
+      {
+        pattern: `test-dist/**/*`,
+        watched: false,
+        included: false,
+        served: true,
+      },
+    ],
+
+    proxies: {
+      "/test-dist/": "/base/test-dist/",
+    },
 
     // list of files / patterns to exclude
     exclude: [],
 
     plugins: [
       // load plugin
-      require.resolve("@open-wc/karma-esm"),
+      "karma-webpack",
       "karma-mocha",
       "karma-chrome-launcher",
       "karma-firefox-launcher",
@@ -33,7 +59,22 @@ module.exports = function (config) {
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-    preprocessors: {},
+    preprocessors: {
+      "test/test.js": ["webpack"],
+    },
+
+    customHeaders: [
+      {
+        name: "Cross-Origin-Opener-Policy",
+        value: "same-origin",
+        match: ".*",
+      },
+      {
+        name: "Cross-Origin-Embedder-Policy",
+        value: "require-corp",
+        match: ".*",
+      },
+    ],
 
     client: {
       clearContext: false,
@@ -69,5 +110,15 @@ module.exports = function (config) {
     // Concurrency level
     // how many browser should be started simultaneous
     concurrency: Infinity,
+    webpack: {
+      output: {
+        path: outputPath,
+      },
+      // plugins: [
+      //   new CopyPlugin({
+      //     patterns: [{ from: "build", to: `${outputPath}/build` }],
+      //   }),
+      // ],
+    },
   });
 };

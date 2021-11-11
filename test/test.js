@@ -3,14 +3,14 @@
 //
 // SPDX-License-Identifier: Unlicense
 
-import * as Comlink from "comlink";
-import singleAuthorMsgs from "./data/singleAuthorMsgs.js";
-import singleAuthorMsgsKeys from "./data/singleAuthorMsgsKeys.js";
-import multiAuthorMsgs from "./data/multiAuthorMsgs.js";
-import validMsg from "./data/valid.js";
-import validMsgKey from "./data/validKey.js";
-import validHmacMsg from "./data/validHmac.js";
-import validHmacMsgKey from "./data/validHmacKey.js";
+const Comlink = require("comlink");
+const singleAuthorMsgs = require("./data/singleAuthorMsgs.json");
+const singleAuthorMsgsKeys = require("./data/singleAuthorMsgsKeys.json");
+const multiAuthorMsgs = require("./data/multiAuthorMsgs.json");
+const validMsg = require("./data/valid.json");
+const validMsgKey = require("./data/validKey.json");
+const validHmacMsg = require("./data/validHmac.json");
+const validHmacMsgKey = require("./data/validHmacKey.json");
 
 // "The buffer module from node.js, for the browser"
 //const Buffer = require('buffer/').Buffer;
@@ -18,7 +18,7 @@ import validHmacMsgKey from "./data/validHmacKey.js";
 // We can't just require ../index because Karma doesn't bundle `new Worker`
 // In Chrome this may work, but we also want to support Firefox
 const wrapped = Comlink.wrap(
-  new Worker(new URL("../test-dist/main.js", import.meta.url))
+  new Worker(new URL("../test-dist/main.js", "http://localhost:9876"))
 );
 
 const validate = {
@@ -62,7 +62,7 @@ const validate = {
 };
 
 const hmacKey1 = null;
-const hmacKey2 = 'CbwuwYXmZgN7ZSuycCXoKGOTU1dGwBex+paeA2kr37U=';
+const hmacKey2 = "CbwuwYXmZgN7ZSuycCXoKGOTU1dGwBex+paeA2kr37U=";
 
 describe("test: ", function () {
   before(function (done) {
@@ -127,7 +127,7 @@ describe("test: ", function () {
   it("verification of single message signature with hmac (buffer)", function (done) {
     let msgs = [validHmacMsg];
     // create Uint8Array from base64 encoded string
-    let hmacArray = Uint8Array.from(atob(hmacKey2), c => c.charCodeAt(0));
+    let hmacArray = Uint8Array.from(atob(hmacKey2), (c) => c.charCodeAt(0));
     // access ArrayBuffer from Uint8Array
     let hmacKeyBuf = hmacArray.buffer;
     validate.verifySignatures(hmacKeyBuf, msgs, (err, res) => {
